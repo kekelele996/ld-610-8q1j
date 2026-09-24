@@ -57,6 +57,16 @@ backend/src/routes, controllers, services, models, repositories, middlewares, co
 - RelicCondition: constants/RelicCondition、types/RelicCondition、constructors、logTemplates、errorMessages、筛选器、展示组件/控制器均有引用。
 - PlanApprovalStatus: constants/PlanApprovalStatus、types/PlanApprovalStatus、constructors、logTemplates、errorMessages、筛选器、展示组件/控制器均有引用。
 - DamageSeverity: constants/DamageSeverity、types/DamageSeverity、constructors、logTemplates、errorMessages、筛选器、展示组件/控制器均有引用。
+- DamageRecordStatus（OPEN/IN_RESTORATION/CLOSED）: backend/src/constants/DamageRecordStatus.ts、frontend/src/constants/DamageRecordStatus.ts、constants/statusText.ts、种子数据与病害/方案两个页面均有引用。
+
+## 修复方案审批流
+
+- 接口：`POST /api/restoration-plan/:id/submit|approve|reject`、`PATCH /api/restoration-plan/:id`；审批接口要求 `x-role: expert`（或 admin），否则 403 `RBAC_DENIED`。
+- 状态机：DRAFT/REJECTED → SUBMITTED → APPROVED/REJECTED；仅 SUBMITTED 可审批，否则 409 `PLAN_NOT_SUBMITTED`。
+- 批准：写入 `approved_by`/`approved_at`，并把关联病害置为 IN_RESTORATION（修复中）。
+- 驳回：必须填写原因（否则 400 `REJECT_REASON_REQUIRED`），`rejected_by`/`rejected_at`/`reject_reason` 保留在方案记录上。
+- 约束：APPROVED 方案禁止再改修复方法/风险说明（409 `PLAN_LOCKED`）；IN_RESTORATION 病害禁止再生成新方案（409 `DAMAGE_IN_RESTORATION`）。
+- 页面：/plans 提供编辑、提交、批准、驳回操作；/damages 展示每条病害的关联方案与审批状态，修复中的病害禁用“转为修复方案”。
 
 ## 为什么会牵一发动全身
 

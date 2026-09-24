@@ -7,4 +7,9 @@ export interface RestorationPlan {
   risk_assessment: string;
   approval_status: string;
   owner_id: number;
+  approved_by: string | null;
+  approved_at: string | null;
+  rejected_by: string | null;
+  rejected_at: string | null;
+  reject_reason: string | null;
 }

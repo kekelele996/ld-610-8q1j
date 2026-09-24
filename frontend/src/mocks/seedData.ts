@@ -37,33 +37,33 @@ export const mockData = {
       "relic_id": 1,
       "damage_type": "FRAGILE",
       "position_desc": "position desc 1",
-      "severity": "severity 1",
+      "severity": "HIGH",
       "discovered_by": "discovered by 1",
       "discovered_at": "2026-06-11T09:00:00Z",
       "image_url": "/mock/image_url-1.png",
-      "status": "SUBMITTED"
+      "status": "OPEN"
     },
     {
       "id": 2,
       "relic_id": 2,
       "damage_type": "DAMAGED",
       "position_desc": "position desc 2",
-      "severity": "severity 2",
+      "severity": "CRITICAL",
       "discovered_by": "discovered by 2",
       "discovered_at": "2026-06-12T09:00:00Z",
       "image_url": "/mock/image_url-2.png",
-      "status": "APPROVED"
+      "status": "IN_RESTORATION"
     },
     {
       "id": 3,
       "relic_id": 3,
       "damage_type": "IN_RESTORATION",
       "position_desc": "position desc 3",
-      "severity": "severity 3",
+      "severity": "MEDIUM",
       "discovered_by": "discovered by 3",
       "discovered_at": "2026-06-13T09:00:00Z",
       "image_url": "/mock/image_url-3.png",
-      "status": "DRAFT"
+      "status": "OPEN"
     }
   ],
   "restorationPlan": [
@@ -75,7 +75,12 @@ export const mockData = {
       "method": "method 1",
       "risk_assessment": "risk assessment 1",
       "approval_status": "SUBMITTED",
-      "owner_id": 1
+      "owner_id": 1,
+      "approved_by": null,
+      "approved_at": null,
+      "rejected_by": null,
+      "rejected_at": null,
+      "reject_reason": null
     },
     {
       "id": 2,
@@ -85,7 +90,12 @@ export const mockData = {
       "method": "method 2",
       "risk_assessment": "risk assessment 2",
       "approval_status": "APPROVED",
-      "owner_id": 2
+      "owner_id": 2,
+      "approved_by": "expert-chen",
+      "approved_at": "2026-06-15T09:30:00Z",
+      "rejected_by": null,
+      "rejected_at": null,
+      "reject_reason": null
     },
     {
       "id": 3,
@@ -95,7 +105,27 @@ export const mockData = {
       "method": "method 3",
       "risk_assessment": "risk assessment 3",
       "approval_status": "DRAFT",
-      "owner_id": 3
+      "owner_id": 3,
+      "approved_by": null,
+      "approved_at": null,
+      "rejected_by": null,
+      "rejected_at": null,
+      "reject_reason": null
+    },
+    {
+      "id": 4,
+      "relic_id": 1,
+      "damage_record_id": 1,
+      "plan_title": "plan title 4",
+      "method": "method 4",
+      "risk_assessment": "risk assessment 4",
+      "approval_status": "REJECTED",
+      "owner_id": 1,
+      "approved_by": null,
+      "approved_at": null,
+      "rejected_by": "expert-chen",
+      "rejected_at": "2026-06-10T14:00:00Z",
+      "reject_reason": "风险评估未覆盖二次污染，已退回重编"
     }
   ],
   "restorationStep": [
@@ -162,4 +192,4 @@ export const mockData = {
       "note": "note 3"
     }
   ]
-} as const;
+};
