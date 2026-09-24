@@ -52,11 +52,27 @@ backend/src/routes, controllers, services, models, repositories, middlewares, co
 - 数据库使用命名卷，避免绑定中文路径。
 - 常见问题：端口占用时修改 `.env` 中端口后重启；需要重置数据时执行 `docker compose down -v`。
 
+## 修复方案审批流程
+
+修复方案页（`/plans`）是可操作的审批闭环，而不只是只读列表：
+
+1. 修复师在**病害记录页**（`/damages`）对“已登记”且尚无在途方案的病害点击「转修复方案」，生成 **DRAFT（草稿）** 方案；已进入修复（IN_RESTORATION）或已关闭（CLOSED）的病害按钮禁用，不能再转新方案。
+2. 草稿或被驳回方案可「提交审批」，状态变为 **SUBMITTED（提交中）**。
+3. **专家**角色（页面右上角角色切换器选择“专家”）可对提交中的方案：
+   - **批准**：记录 `approved_by`（审批人）与 `approved_at`（审批时间），同时把关联病害状态自动置为 **IN_RESTORATION（修复中）**；
+   - **驳回**：必须填写驳回原因，原因持久化在 `rejection_reason`，方案回到 **REJECTED（已驳回）**，修复师修改后可重新提交。
+4. 方案一旦 **APPROVED（已批准）**，其修复方法与风险说明立即锁定，表单只读，后端 `PATCH` 同样以 `PLAN_LOCKED` 拒绝越权修改。
+5. 病害记录页每张卡片都展示关联方案及当前审批状态（含审批人/时间/驳回原因）。
+
+接口：`POST/PATCH /api/restoration-plan`、`POST /api/restoration-plan/:id/submit|approve|reject`；批准/驳回由 `rbacMiddleware(["EXPERT"])` 强制专家权限。
+
 ## 枚举/常量出现位置清单
 
-- RelicCondition: constants/RelicCondition、types/RelicCondition、constructors、logTemplates、errorMessages、筛选器、展示组件/控制器均有引用。
-- PlanApprovalStatus: constants/PlanApprovalStatus、types/PlanApprovalStatus、constructors、logTemplates、errorMessages、筛选器、展示组件/控制器均有引用。
-- DamageSeverity: constants/DamageSeverity、types/DamageSeverity、constructors、logTemplates、errorMessages、筛选器、展示组件/控制器均有引用。
+- RelicCondition: 前后端 `constants/RelicCondition`、`types`、DTO 构造器、`logTemplates`、`errorMessages`、RelicsPage/DashboardPage 筛选与展示组件均有引用。
+- PlanApprovalStatus: 前后端 `constants/PlanApprovalStatus`、`types/PlanApprovalStatus`、方案构造器、`PlanDecisionConstructor`、`logTemplates`、`errorMessages`、PlansPage 状态筛选 chip、StatusBadge、ApprovalTimeline、后端 service/controller/routes 均有引用。
+- DamageSeverity: 前后端 `constants/DamageSeverity`、`types`、构造器、`logTemplates`、`errorMessages`、DamagesPage/DashboardPage 筛选与 SeverityBadge 展示均有引用。
+- DamageStatus（REGISTERED / IN_RESTORATION / CLOSED）: 前后端 `constants/DamageStatus`、`DamageRecordPayload`、病害构造器、后端 `DamageRecordService` 审批联动、DamagesPage 筛选与状态徽章；批准方案时由后端把病害从 REGISTERED 联动到 IN_RESTORATION。
+- UserRole（RESTORER / EXPERT / ARCHIVIST / VISITOR）: 前后端 `constants/UserRole`、`authMiddleware`/`rbacMiddleware`、前端 RoleSwitcher 与 `usePlanApproval` 按钮显隐。
 
 ## 为什么会牵一发动全身
 

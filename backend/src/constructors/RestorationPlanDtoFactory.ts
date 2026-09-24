@@ -1,1 +1,20 @@
-export const createRestorationPlanDto = (overrides = {}) => ({ id: 1, relic_id: 1, damage_record_id: 1, plan_title: "plan title 1", method: "method 1", risk_assessment: "risk assessment 1", approval_status: "SUBMITTED", owner_id: 1, ...overrides });
+import type { RestorationPlan } from "../models/RestorationPlan";
+
+export const createRestorationPlanDto = (overrides: Partial<RestorationPlan> = {}): RestorationPlan => ({
+  id: 0,
+  relic_id: 0,
+  damage_record_id: 0,
+  plan_title: "",
+  method: "",
+  risk_assessment: "",
+  approval_status: "DRAFT",
+  owner_id: 0,
+  owner_name: "",
+  submitted_at: null,
+  approved_by: null,
+  approved_at: null,
+  rejection_reason: null,
+  created_at: "",
+  updated_at: "",
+  ...overrides
+});
